@@ -1,0 +1,1982 @@
+<!DOCTYPE html>
+<html lang="sr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kraljeva Riznica - Misterija Lažnih Novčića</title>
+    <style>
+        /* NEŽNE I USKLAĐENE TEME (CSS PROMENLJIVE) */
+        :root {
+            /* Srednjovekovna (Topla, zagasita, meka papirus/drvo paleta) */
+            --bg-gradient-1: rgba(28, 22, 18, 0.92);
+            --bg-gradient-2: rgba(42, 33, 26, 0.92);
+            --main-bg: rgba(48, 38, 30, 0.96);
+            --border-color: #8c6d53;
+            --text-color: #f0e6db;
+            --accent-color: #d4af37;
+            --subtitle-color: #bfa17c;
+            --hud-bg: #211a14;
+            --hud-border: #66503d;
+            --table-bg-1: #3b2d22;
+            --table-bg-2: #241c14;
+            --table-border: #4d3a2b;
+            --bag-bg: radial-gradient(circle at 40% 30%, #47372a 0%, #261d15 100%);
+            --bag-border: #8c6d53;
+            --btn-bg: linear-gradient(to bottom, #d4af37 0%, #997a26 100%);
+            --btn-hover: linear-gradient(to bottom, #e6c55c, #b38f2d);
+            --btn-text: #1f1812;
+            --modal-bg: #30261e;
+        }
+
+        body.theme-scifi {
+            /* Tamno plava / neon cijan - nežna, duboka svemirska paleta koja ne blješti */
+            --bg-gradient-1: rgba(10, 16, 26, 0.92);
+            --bg-gradient-2: rgba(18, 28, 43, 0.92);
+            --main-bg: rgba(18, 28, 43, 0.96);
+            --border-color: #4da6ff;
+            --text-color: #e1edfc;
+            --accent-color: #33bbff;
+            --subtitle-color: #80b3ff;
+            --hud-bg: #0d1420;
+            --hud-border: #266099;
+            --table-bg-1: #1a2d42;
+            --table-bg-2: #0f1a26;
+            --table-border: #224d7a;
+            --bag-bg: radial-gradient(circle at 40% 30%, #223852 0%, #0d1420 100%);
+            --bag-border: #4da6ff;
+            --btn-bg: linear-gradient(to bottom, #33bbff 0%, #1a75ff 100%);
+            --btn-hover: linear-gradient(to bottom, #66ccff, #3385ff);
+            --btn-text: #08101a;
+            --modal-bg: #142233;
+        }
+
+        body.theme-mystic {
+            /* Ponoćno ljubičasta / magična zagasita paleta koja prija očima */
+            --bg-gradient-1: rgba(22, 14, 28, 0.92);
+            --bg-gradient-2: rgba(36, 22, 46, 0.92);
+            --main-bg: rgba(33, 20, 42, 0.96);
+            --border-color: #b380ff;
+            --text-color: #f3ebfc;
+            --accent-color: #cc99ff;
+            --subtitle-color: #d1b3ff;
+            --hud-bg: #1a0f21;
+            --hud-border: #663399;
+            --table-bg-1: #382247;
+            --table-bg-2: #1f1226;
+            --table-border: #522d6b;
+            --bag-bg: radial-gradient(circle at 40% 30%, #482f5c 0%, #1f1226 100%);
+            --bag-border: #b380ff;
+            --btn-bg: linear-gradient(to bottom, #bb88ff 0%, #7733cc 100%);
+            --btn-hover: linear-gradient(to bottom, #cca3ff, #8844dd);
+            --btn-text: #160d1f;
+            --modal-bg: #271733;
+        }
+
+        body {
+            font-family: 'Georgia', serif;
+            background: linear-gradient(var(--bg-gradient-1), var(--bg-gradient-2)), url('pozadina.webp');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            color: var(--text-color);
+            margin: 0;
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            overflow-x: hidden;
+            user-select: none;
+            transition: background 0.4s, color 0.4s;
+        }
+
+        h1 {
+            color: var(--accent-color);
+            margin: 5px 0 2px 0;
+            text-align: center;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.7);
+            font-size: 26px;
+            letter-spacing: 1px;
+        }
+
+        .subtitle {
+            color: var(--subtitle-color);
+            margin-bottom: 15px;
+            font-size: 13px;
+            text-align: center;
+            font-style: italic;
+        }
+
+        .screen {
+            display: none;
+            width: 100%;
+            max-width: 720px;
+            background: var(--main-bg);
+            border: 2px solid var(--border-color);
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.6), inset 0 0 20px rgba(0,0,0,0.4);
+            box-sizing: border-box;
+            text-align: center;
+            transition: background 0.4s, border-color 0.4s;
+        }
+
+        .active {
+            display: block;
+        }
+
+        /* HUD traka */
+        .hud {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: var(--hud-bg);
+            padding: 10px 18px;
+            border: 1px solid var(--hud-border);
+            border-radius: 8px;
+            margin-bottom: 12px;
+            font-size: 15px;
+            color: var(--accent-color);
+        }
+
+        .hud-actions {
+            display: flex;
+            gap: 6px;
+        }
+
+        .hud-btn {
+            background: transparent;
+            border: 1px solid var(--bag-border);
+            color: var(--accent-color);
+            padding: 4px 8px;
+            font-size: 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            box-shadow: none;
+            margin: 0;
+        }
+
+        .hud-btn:hover {
+            background: rgba(255, 255, 255, 0.08);
+            transform: none;
+        }
+
+        /* Sto sa vrećama */
+        .table-area {
+            background: linear-gradient(135deg, var(--table-bg-1) 0%, var(--table-bg-2) 100%);
+            border: 2px solid var(--table-border);
+            border-radius: 10px;
+            padding: 15px;
+            margin: 10px 0;
+            box-shadow: inset 0 4px 12px rgba(0,0,0,0.6), 0 4px 10px rgba(0,0,0,0.3);
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .bag-item {
+            background: var(--bag-bg);
+            border: 2px solid var(--bag-border);
+            width: 130px;
+            border-radius: 10px;
+            position: relative;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 8px 6px;
+            box-sizing: border-box;
+        }
+
+        .bag-label {
+            background: rgba(0, 0, 0, 0.4);
+            color: var(--accent-color);
+            font-size: 11px;
+            padding: 2px 4px;
+            border-radius: 4px;
+            border: 1px solid var(--bag-border);
+            font-weight: bold;
+            width: 100%;
+            box-sizing: border-box;
+            margin-bottom: 5px;
+        }
+
+        .bag-img {
+            width: 45px;
+            height: 45px;
+            object-fit: contain;
+            filter: drop-shadow(0 3px 5px rgba(0,0,0,0.6));
+            cursor: pointer;
+            transition: transform 0.15s, filter 0.15s;
+        }
+
+        .bag-img:hover {
+            transform: scale(1.08);
+            filter: brightness(1.15) drop-shadow(0 3px 6px rgba(0,0,0,0.8));
+        }
+
+        .bag-info {
+            font-size: 11px;
+            color: var(--text-color);
+            margin: 4px 0;
+        }
+
+        /* Kontrole za dodavanje/oduzimanje novčića */
+        .coin-controls {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+            margin-top: 4px;
+            width: 100%;
+        }
+
+        .coin-btn {
+            background: var(--btn-bg);
+            color: var(--btn-text);
+            border: 1px solid var(--hud-border);
+            width: 24px;
+            height: 24px;
+            padding: 0;
+            font-size: 14px;
+            font-weight: bold;
+            border-radius: 4px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+            margin: 0;
+        }
+
+        .coin-btn:hover {
+            background: var(--btn-hover);
+            transform: scale(1.05);
+        }
+
+        .coin-btn:disabled {
+            background: rgba(100,100,100,0.2);
+            color: rgba(255,255,255,0.3);
+            border-color: rgba(100,100,100,0.3);
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .coin-count-input {
+            width: 32px;
+            background: var(--hud-bg);
+            border: 1px solid var(--bag-border);
+            color: var(--accent-color);
+            text-align: center;
+            font-family: 'Georgia', serif;
+            font-size: 12px;
+            border-radius: 4px;
+            padding: 2px;
+            user-select: none;
+            -webkit-user-select: none;
+            outline: none; /* OVO UKLANJA OKVIR OKO KVADRATIĆA */
+        }
+
+        /* Sprečava da dobije fokus i da menja izgled na klik */
+        .coin-count-input:focus {
+            outline: none;
+            border: 1px solid var(--bag-border);
+        }
+
+        /* Radna zona vage */
+        .scale-box {
+            background: var(--hud-bg);
+            border: 1px solid var(--bag-border);
+            border-radius: 10px;
+            padding: 12px;
+            margin: 12px 0;
+            font-size: 15px;
+            color: var(--accent-color);
+            box-shadow: inset 0 0 10px rgba(0,0,0,0.5);
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.6);
+        }
+
+        .scale-actions {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-top: 10px;
+        }
+
+        /* Glavna dugmad */
+        button {
+            background: var(--btn-bg);
+            color: var(--btn-text);
+            border: 1px solid var(--hud-border);
+            padding: 10px 22px;
+            font-size: 15px;
+            font-weight: bold;
+            font-family: 'Georgia', serif;
+            border-radius: 8px;
+            cursor: pointer;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.4);
+            transition: 0.15s;
+        }
+
+        button:hover {
+            background: var(--btn-hover);
+            transform: scale(1.02);
+            box-shadow: 0 5px 12px rgba(0,0,0,0.5);
+        }
+
+        button:disabled {
+            background: rgba(100,100,100,0.2);
+            color: rgba(255,255,255,0.3);
+            border-color: rgba(100,100,100,0.3);
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .status-msg {
+            margin-top: 10px;
+            font-weight: bold;
+            font-size: 14px;
+            min-height: 22px;
+        }
+
+        .end-image {
+            display: block;
+            max-width: 260px;
+            width: 60%;
+            height: auto;
+            margin: 14px auto;
+            border-radius: 10px;
+            border: 2px solid var(--border-color);
+            box-shadow: 0 6px 18px rgba(0,0,0,0.5);
+        }
+
+        .rules-box {
+            background: var(--hud-bg);
+            border-left: 4px solid var(--accent-color);
+            padding: 10px 14px;
+            margin-bottom: 12px;
+            font-size: 13px;
+            text-align: left;
+            color: var(--text-color);
+            line-height: 1.5;
+            border-radius: 0 6px 6px 0;
+        }
+
+        .guess-section {
+            display: none;
+            margin-top: 15px;
+            background: var(--hud-bg);
+            border: 1px dashed var(--accent-color);
+            padding: 12px;
+            border-radius: 8px;
+        }
+
+        .guess-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            justify-content: center;
+            margin-top: 8px;
+        }
+
+        .settings-box {
+            margin-top: 15px;
+            padding-top: 10px;
+            border-top: 1px solid var(--bag-border);
+            font-size: 13px;
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            align-items: center;
+        }
+
+        select {
+            background: var(--hud-bg);
+            color: var(--accent-color);
+            border: 1px solid var(--bag-border);
+            padding: 4px 8px;
+            font-family: 'Georgia', serif;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        
+        /* --- IZBOR TEME --- */
+.theme-modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.72);
+    backdrop-filter: blur(6px);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 2000;
+    padding: 15px;
+    box-sizing: border-box;
+}
+
+.theme-modal {
+    width: 100%;
+    max-width: 420px;
+    background: var(--modal-bg);
+    border: 2px solid var(--border-color);
+    border-radius: 16px;
+    padding: 20px;
+    box-sizing: border-box;
+    box-shadow: 0 15px 40px rgba(0,0,0,0.8);
+    animation: themeModalPop 0.22s ease-out;
+}
+
+@keyframes themeModalPop {
+    from {
+        transform: scale(0.9) translateY(15px);
+        opacity: 0;
+    }
+    to {
+        transform: scale(1) translateY(0);
+        opacity: 1;
+    }
+}
+
+.theme-modal h3 {
+    margin: 0 0 5px;
+    color: var(--accent-color);
+    font-size: 21px;
+}
+
+.theme-modal-subtitle {
+    color: var(--subtitle-color);
+    font-size: 12px;
+    margin-bottom: 16px;
+}
+
+.theme-options {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.theme-option {
+    width: 100%;
+    padding: 13px;
+    border: 2px solid var(--hud-border);
+    border-radius: 10px;
+    background: var(--hud-bg);
+    color: var(--text-color);
+    text-align: left;
+    cursor: pointer;
+    transition: 0.15s;
+    box-sizing: border-box;
+}
+
+.theme-option:hover {
+    transform: translateY(-1px);
+    border-color: var(--accent-color);
+}
+
+.theme-option.selected {
+    border-color: var(--accent-color);
+    box-shadow: 0 0 0 2px rgba(212,175,55,0.18);
+}
+
+.theme-name {
+    font-weight: bold;
+    color: var(--accent-color);
+    font-size: 14px;
+}
+
+.theme-description {
+    display: block;
+    margin-top: 3px;
+    color: var(--subtitle-color);
+    font-size: 11px;
+}
+
+.theme-modal-buttons {
+    display: flex;
+    justify-content: center;
+    margin-top: 16px;
+}
+
+.theme-modal-buttons button {
+    width: 100%;
+}
+
+        /* --- TEMATSKI MODALI (UMESTO ALERT/CONFIRM) --- */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.65);
+            backdrop-filter: blur(4px);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .modal-box {
+            background: var(--modal-bg);
+            border: 2px solid var(--border-color);
+            padding: 22px 25px;
+            border-radius: 12px;
+            max-width: 360px;
+            width: 90%;
+            text-align: center;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.8);
+            color: var(--text-color);
+            animation: modalPop 0.2s ease-out;
+        }
+
+        @keyframes modalPop {
+            0% { transform: scale(0.9); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        .modal-title {
+            color: var(--accent-color);
+            font-size: 18px;
+            margin-top: 0;
+            margin-bottom: 10px;
+        }
+
+        .modal-text {
+            font-size: 14px;
+            line-height: 1.5;
+            margin-bottom: 18px;
+        }
+
+        .modal-buttons {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+        }
+
+        /* --- MOBILNE OPTIMIZACIJE --- */
+        @media screen and (max-width: 768px) {
+            body { padding: 8px; }
+            h1 { font-size: 22px; }
+            .subtitle { font-size: 11px; margin-bottom: 10px; }
+            .screen { padding: 12px 10px; border-radius: 10px; }
+            .hud { 
+                padding: 8px 10px; 
+                font-size: 13px; 
+                flex-wrap: wrap;        /* Dozvoljava da elementi pređu u novi red */
+                justify-content: center; /* Lepo centrira sadržaj */
+                gap: 8px;               /* Pravi razmak između redova */
+            }
+            .hud-btn { padding: 3px 6px; font-size: 11px; }
+            .rules-box { font-size: 12px; padding: 8px 10px; }
+            .table-area { gap: 8px; padding: 10px 6px; }
+            .bag-item { width: 95px; padding: 6px 4px; }
+            .bag-label { font-size: 10px; padding: 1px 2px; }
+            .bag-img { width: 35px; height: 35px; }
+            .bag-info { font-size: 10px; margin: 3px 0; }
+            .coin-btn { width: 22px; height: 22px; font-size: 12px; }
+            .coin-count-input { width: 26px; font-size: 11px; padding: 1px; }
+            .scale-box { font-size: 13px; padding: 10px; }
+            button { padding: 8px 16px; font-size: 13px; }
+            .scale-actions { flex-direction: column; gap: 8px; }
+            .scale-actions button { width: 100%; }
+            .end-image { max-width: 180px; margin: 10px auto; }
+            .guess-buttons { 
+    display: flex; 
+    flex-wrap: wrap; 
+    justify-content: center;
+    gap: 6px; 
+}
+.guess-buttons button { 
+    flex: 1 1 30%; /* 47% širine automatski tera dugmiće da idu tačno po dvoje u red */
+    min-width: 90px; 
+}
+        }
+
+
+
+/* --- EFEKAT POGOĐENE VREĆE --- */
+.coin-reward-effect {
+    position: fixed;
+    pointer-events: none;
+    z-index: 3000;
+    width: 140px;
+    height: 140px;
+    transform: translate(-50%, -50%);
+}
+
+.magic-coin {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background:
+        radial-gradient(circle at 35% 30%, #fff6a0 0%, #f6d45a 25%, #d4af37 60%, #8c6815 100%);
+    border: 2px solid #ffe68a;
+    box-shadow:
+        0 0 6px #ffd84d,
+        0 0 14px rgba(255, 215, 70, 0.8);
+    animation: magicCoinFly 0.9s ease-out forwards;
+}
+
+.magic-coin::after {
+    content: "★";
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #8a6818;
+    font-size: 11px;
+    font-weight: bold;
+}
+
+.magic-spark {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #ffe88a;
+    box-shadow: 0 0 8px #ffd84d;
+    animation: magicSpark 0.8s ease-out forwards;
+}
+
+@keyframes magicCoinFly {
+    0% {
+        transform: translate(-50%, -50%) scale(0.3) rotate(0deg);
+        opacity: 0;
+    }
+
+    20% {
+        opacity: 1;
+    }
+
+    65% {
+        opacity: 1;
+    }
+
+    100% {
+        transform:
+            translate(
+                calc(-50% + var(--x)),
+                calc(-50% + var(--y))
+            )
+            scale(1)
+            rotate(360deg);
+        opacity: 0;
+    }
+}
+
+@keyframes magicSpark {
+    0% {
+        transform: translate(-50%, -50%) scale(0);
+        opacity: 0;
+    }
+
+    20% {
+        opacity: 1;
+    }
+
+    100% {
+        transform:
+            translate(
+                calc(-50% + var(--x)),
+                calc(-50% + var(--y))
+            )
+            scale(0.2);
+        opacity: 0;
+    }
+}
+
+/* --- DISKRETAN EFEKAT POGREŠNE VREĆE --- */
+.wrong-bag-effect {
+    position: fixed;
+    pointer-events: none;
+    z-index: 3000;
+    width: 100px;
+    height: 100px;
+    transform: translate(-50%, -50%);
+}
+
+.wrong-bag-mark {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%) scale(0.65);
+    color: #d96b5f;
+    font-family: Arial, sans-serif;
+    font-size: 42px;
+    font-weight: bold;
+    text-shadow:
+        0 0 5px rgba(180, 50, 40, 0.45),
+        0 0 12px rgba(180, 50, 40, 0.25);
+    opacity: 0;
+    animation: wrongBagMark 0.65s ease-out forwards;
+}
+
+@keyframes wrongBagMark {
+    0% {
+        opacity: 0;
+        transform: translate(-50%, -50%) scale(0.65);
+    }
+
+    25% {
+        opacity: 0.9;
+        transform: translate(-50%, -50%) scale(1);
+    }
+
+    70% {
+        opacity: 0.75;
+        transform: translate(-50%, -50%) scale(1);
+    }
+
+    100% {
+        opacity: 0;
+        transform: translate(-50%, -50%) scale(1.08);
+    }
+}
+
+
+@keyframes pulse-danger {
+    0% { opacity: 1; }
+    50% { opacity: 0.3; }
+    100% { opacity: 1; }
+}
+
+.danger-hud {
+    color: #ff4d4d !important;
+    animation: pulse-danger 1s infinite;
+}
+    </style>
+</head>
+<body>
+
+    <h1>Kraljeva Riznica</h1>
+    <div class="subtitle" id="main-subtitle">Srednjovekovna detektivska zagonetka</div>
+
+    <!-- GLAVNI MENI -->
+    <div id="menu-screen" class="screen active">
+        <h2 style="color: var(--accent-color); margin-top:5px;">Slučaj: Tajna Lažnih Novčića</h2>
+        <p style="line-height: 1.6; font-size: 14px; color: var(--text-color);">
+            U mračnim odajama kraljevskog trezora, lopov je podmetnuo vreću sa lažnim novčićima.
+            Težina ispravnih novčića i odstupanje lažnih menjaju se sa svakim novim slučajem!
+            <br><br>
+            Izaberi <b>jedinstvenu količinu</b> novčića iz <b>svake</b> vreće 
+            (u granicama onoga što vreća sadrži i što pravila dozvoljavaju), 
+            postavi ih na mesinganu vagu i iskoristi <b>dedukciju</b> da raskrinkaš prevaru i pronađeš lažnu vreću!
+        </p>
+        
+        <div style="display: flex; flex-direction: column; align-items: center; gap: 10px;">
+            <button onclick="startGame()">Započni Istragu</button>
+            <button onclick="startGame(true)">Vremenski Izazov ⏳</button>
+            <button type="button" onclick="openThemeModal()">🎨 Izaberi temu</button>
+        </div>
+    </div>
+    <!-- EKRAN IGRE -->
+    <div id="game-screen" class="screen">
+        <div class="hud">
+            <span id="hud-level">Slučaj: 1 / 4</span>
+            <div id="hud-timer" style="display: none;">⏳ Vreme: 00s</div>
+            <div class="hud-actions">
+                <button class="hud-btn" onclick="confirmReturnToMenu()">🏠 Meni</button>
+                <button class="hud-btn" id="sound-btn" onclick="toggleSound()">🎵 Zvuk: Isključen</button>
+            </div>
+            <span id="hud-lives">Pokušaji: ⚖️⚖️⚖️</span>
+        </div>
+
+        <div class="rules-box" id="level-rules">
+            <!-- Dinamička pravila -->
+        </div>
+
+        <p style="margin: 5px 0; font-size: 13px; color: var(--subtitle-color);">Radna površina (odredi količinu novčića za vagu):</p>
+        
+        <div class="table-area" id="bags-list">
+            <!-- Vreće se generišu ovde -->
+        </div>
+
+        <div class="scale-box" id="scale-display">
+            ⚖️ Vaga je prazna. Izaberi novčiće iz vreća i pokreni merenje.
+        </div>
+
+        <div class="scale-actions" id="scale-actions-area">
+            <button id="weigh-btn" onclick="performWeighing()">Pokreni Merenje na Vagi</button>
+            <button id="reset-selection-btn" onclick="resetSelection()" style="background: rgba(150,50,50,0.6); color: #fff; border-color: #803030;">Poništi Izbor</button>
+        </div>
+
+        <!-- Sekcija za konačni izbor vreće nakon merenja -->
+        <div class="guess-section" id="guess-section">
+            <p style="margin: 0 0 5px 0; color: var(--accent-color); font-weight: bold; font-size: 14px;">Merenje je završeno! Koja vreća sadrži lažne novčiće?</p>
+            <div class="guess-buttons" id="guess-buttons-container">
+                <!-- Dugmad za pogađanje vreća -->
+            </div>
+        </div>
+
+        <div class="status-msg" id="game-status"></div>
+        <button id="next-btn" style="display:none; margin-top:12px;" onclick="nextLevel()">Sledeći Slučaj</button>
+    </div>
+
+    <!-- KRAJ IGRE / POBEDA -->
+    <div id="win-screen" class="screen">
+        <h2 style="color: var(--accent-color);" id="end-title">Slučaj Rešen!</h2>
+        <img id="end-image" class="end-image" src="" alt="">
+        <p id="end-msg">Spasao si kraljevstvo i postao Vrhovni Detektiv Riznice.</p>
+        <button onclick="backToMenu()">Igraj Ponovo</button>
+    </div>
+
+    <!-- PRILAGOĐENI TEMATSKI MODAL PROZOR -->
+<div id="custom-modal" class="modal-overlay">
+    <div class="modal-box">
+        <h3 class="modal-title" id="modal-title-text">Obaveštenje</h3>
+        <p class="modal-text" id="modal-body-text">Tekst poruke...</p>
+        <div class="modal-buttons" id="modal-buttons-container">
+            <button onclick="closeModal()">U redu</button>
+        </div>
+    </div>
+</div>
+
+<!-- PROZOR ZA IZBOR TEME -->
+<div id="theme-modal" class="theme-modal-overlay">
+    <div class="theme-modal">
+
+        <h3>🎨 Izbor teme</h3>
+
+        <div class="theme-modal-subtitle">
+            Izaberi izgled koji želiš za svoju istragu.
+        </div>
+
+        <div class="theme-options">
+
+            <button type="button" class="theme-option" data-theme="medieval">
+                <span class="theme-name">🏰 Srednjovekovna</span>
+                <span class="theme-description">
+                    Kraljevska riznica, drvo i topli tonovi.
+                </span>
+            </button>
+
+            <button type="button" class="theme-option" data-theme="scifi">
+                <span class="theme-name">💎 Riznica plavog safira</span>
+                <span class="theme-description">
+                    Hladni svetlucavi tonovi i plavi dragulji.
+                </span>
+            </button>
+
+            <button type="button" class="theme-option" data-theme="mystic">
+                <span class="theme-name">🔮 Mistična / Alhemičarska</span>
+                <span class="theme-description">
+                    Tajanstvena atmosfera sa ljubičastim tonovima.
+                </span>
+            </button>
+
+        </div>
+
+        <div class="theme-modal-buttons">
+            <button type="button" onclick="closeThemeModal()">Zatvori</button>
+        </div>
+
+    </div>
+</div>
+<script>
+    const levels = [
+        { bagsCount: 3 },
+        { bagsCount: 4 },
+        { bagsCount: 5 },
+        { bagsCount: 6 }
+    ];
+
+    let currentLevel = 0;
+    let lives = 3;
+    let guessedWrongBags = []; // Pamti promašene vreće u trenutnom nivou
+    let targetBag = 0;
+    let bagTotalCoins = []; 
+    let selectedCoinsPerBag = [];
+    let weighingDone = false;
+    let soundEnabled = false;
+    let audioCtx = null;
+    let musicPlaying = false;
+    let musicTimeoutId = null;
+    let droneOsc1 = null, droneOsc2 = null, droneGain1 = null, droneGain2 = null;
+    
+
+    let isTimedMode = false;
+    let timeLeft = 0;
+    let timerInterval = null;
+
+    let timedZone = 1;
+
+    let correctWeight = 10;
+    let weightDiff = 1;
+    let isLighter = true;
+    let endMusicOscillators = [];
+
+    // Inicijalizacija iz LocalStorage-a
+    window.addEventListener('DOMContentLoaded', () => {
+        const savedTheme = localStorage.getItem('gameTheme') || 'medieval';
+        changeTheme(savedTheme, false);
+
+        const savedSound = localStorage.getItem('soundEnabled');
+        if (savedSound === 'true') {
+            soundEnabled = true;
+            document.getElementById('sound-btn').innerText = "🎵 Zvuk: Uključen";
+        }
+    });
+
+    function changeTheme(themeName, save = true) {
+        document.body.className = '';
+        if (themeName === 'scifi') document.body.classList.add('theme-scifi');
+        if (themeName === 'mystic') document.body.classList.add('theme-mystic');
+        if (save) localStorage.setItem('gameTheme', themeName);
+    }
+    
+    
+    function openThemeModal() {
+    const modal = document.getElementById('theme-modal');
+    const currentTheme = localStorage.getItem('gameTheme') || 'medieval';
+
+    document.querySelectorAll('.theme-option').forEach(option => {
+        option.classList.toggle(
+            'selected',
+            option.dataset.theme === currentTheme
+        );
+    });
+
+    modal.style.display = 'flex';
+}
+
+function closeThemeModal() {
+    document.getElementById('theme-modal').style.display = 'none';
+}
+
+document.querySelectorAll('.theme-option').forEach(option => {
+    option.addEventListener('click', () => {
+        const selectedTheme = option.dataset.theme;
+
+        changeTheme(selectedTheme);
+
+        document.querySelectorAll('.theme-option').forEach(item => {
+            item.classList.remove('selected');
+        });
+
+        option.classList.add('selected');
+
+        closeThemeModal();
+    });
+});
+
+    // --- FUNKCIJE ZA TEMATSKE MODALE ---
+    function showModal(title, text, customButtonsHTML = null) {
+        document.getElementById('modal-title-text').innerText = title;
+        document.getElementById('modal-body-text').innerHTML = text;
+        
+        const btnContainer = document.getElementById('modal-buttons-container');
+        if (customButtonsHTML) {
+            btnContainer.innerHTML = customButtonsHTML;
+        } else {
+            btnContainer.innerHTML = `<button onclick="closeModal()">U redu</button>`;
+        }
+        
+        document.getElementById('custom-modal').style.display = 'flex';
+    }
+
+    function closeModal() {
+        playSound('click');
+        document.getElementById('custom-modal').style.display = 'none';
+    }
+
+    // --- SINTETIZATOR ZVUKOVA ---
+    function initAudio() {
+        if (!audioCtx) {
+            audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        }
+        if (audioCtx.state === 'suspended') {
+            audioCtx.resume();
+        }
+    }
+
+    function playSound(type) {
+        if (!soundEnabled) return;
+        initAudio();
+        if (!audioCtx) return;
+
+        const osc = audioCtx.createOscillator();
+        const gainNode = audioCtx.createGain();
+        osc.connect(gainNode);
+        gainNode.connect(audioCtx.destination);
+        const now = audioCtx.currentTime;
+
+        if (type === 'click') {
+            osc.type = 'triangle';
+            osc.frequency.setValueAtTime(400, now);
+            osc.frequency.exponentialRampToValueAtTime(150, now + 0.05);
+            gainNode.gain.setValueAtTime(0.1, now);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, now + 0.05);
+            osc.start(now); osc.stop(now + 0.05);
+        } else if (type === 'coin') {
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(800, now);
+            osc.frequency.exponentialRampToValueAtTime(1400, now + 0.08);
+            gainNode.gain.setValueAtTime(0.15, now);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, now + 0.08);
+            osc.start(now); osc.stop(now + 0.08);
+        } else if (type === 'scale') {
+            osc.type = 'sawtooth';
+            osc.frequency.setValueAtTime(120, now);
+            osc.frequency.linearRampToValueAtTime(180, now + 0.3);
+            gainNode.gain.setValueAtTime(0.2, now);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, now + 0.3);
+            osc.start(now); osc.stop(now + 0.3);
+        } else if (type === 'win') {
+            [523.25, 659.25, 783.99, 1046.50].forEach((freq, idx) => {
+                let o = audioCtx.createOscillator();
+                let g = audioCtx.createGain();
+                o.connect(g); g.connect(audioCtx.destination);
+                o.type = 'triangle';
+                o.frequency.setValueAtTime(freq, now + idx * 0.1);
+                g.gain.setValueAtTime(0.15, now + idx * 0.1);
+                g.gain.exponentialRampToValueAtTime(0.001, now + idx * 0.1 + 0.4);
+                o.start(now + idx * 0.1); o.stop(now + idx * 0.1 + 0.4);
+            });
+        } else if (type === 'gameover') {
+            osc.type = 'sawtooth';
+            osc.frequency.setValueAtTime(220, now);
+            osc.frequency.linearRampToValueAtTime(110, now + 0.5);
+            gainNode.gain.setValueAtTime(0.2, now);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, now + 0.5);
+            osc.start(now); osc.stop(now + 0.5);
+        }
+    }
+
+
+         // Funkcija za prekidanje muzike kraja
+function stopEndMusic() {
+    endMusicOscillators.forEach(osc => { try { osc.stop(); } catch(e) {} });
+    endMusicOscillators = [];
+}
+
+
+           // --- SREDNJOVEKOVNA POBEDNIČKA MUZIKA (Trajanje ~5 sekundi, bez loop-a) ---
+function playWinMusic() {
+    if (!soundEnabled) return;
+    initAudio();
+    if (!audioCtx) return;
+
+    const now = audioCtx.currentTime;
+    // Svečane, kraljevske note u durskom tonalitetu
+    const notes = [
+        { freq: 261.63, time: 0.0, dur: 0.3 }, // C4
+        { freq: 329.63, time: 0.3, dur: 0.3 }, // E4
+        { freq: 392.00, time: 0.6, dur: 0.3 }, // G4
+        { freq: 523.25, time: 0.9, dur: 0.8 }, // C5
+        { freq: 392.00, time: 1.8, dur: 0.2 }, // G4
+        { freq: 440.00, time: 2.1, dur: 0.2 }, // A4
+        { freq: 523.25, time: 2.4, dur: 1.5 }  // C5 (završni akord)
+    ];
+
+    notes.forEach(n => {
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        
+        osc.type = 'triangle'; // Blag, plemenit ton nalik starim instrumentima
+        osc.frequency.setValueAtTime(n.freq, now + n.time);
+        
+        gain.gain.setValueAtTime(0.12, now + n.time);
+        gain.gain.exponentialRampToValueAtTime(0.0001, now + n.time + n.dur);
+        
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        
+        osc.start(now + n.time);
+        osc.stop(now + n.time + n.dur);
+        endMusicOscillators.push(osc);
+    });
+}
+
+// --- MRAČNA MUZIKA ZA PORAZ / GAME OVER (Trajanje ~5 sekundi, bez loop-a) ---
+function playGameOverMusic() {
+    if (!soundEnabled) return;
+    initAudio();
+    if (!audioCtx) return;
+
+    const now = audioCtx.currentTime;
+    // Teške, opadajuće mol note koje dočaravaju gubitak riznice
+    const notes = [
+        { freq: 220.00, time: 0.0, dur: 0.6 }, // A3
+        { freq: 196.00, time: 0.6, dur: 0.6 }, // G3
+        { freq: 185.00, time: 1.2, dur: 0.7 }, // F#3
+        { freq: 164.81, time: 1.9, dur: 0.8 }, // E3
+        { freq: 130.81, time: 2.7, dur: 2.0 }  // C3 (dubok, tužan ton za kraj)
+    ];
+
+    notes.forEach(n => {
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        
+        osc.type = 'sawtooth'; // Oštriji, dramatičniji ton za mračnu atmosferu
+        osc.frequency.setValueAtTime(n.freq, now + n.time);
+        
+        gain.gain.setValueAtTime(0.12, now + n.time);
+        gain.gain.exponentialRampToValueAtTime(0.0001, now + n.time + n.dur);
+        
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        
+        osc.start(now + n.time);
+        osc.stop(now + n.time + n.dur);
+        endMusicOscillators.push(osc);
+    });
+}
+
+    // --- POZADINSKA MUZIKA (napeta, istražna melodija u d-molu) ---
+    function playPluck(freq, startTime) {
+        const osc = audioCtx.createOscillator();
+        const gainNode = audioCtx.createGain();
+        osc.connect(gainNode);
+        gainNode.connect(audioCtx.destination);
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(freq, startTime);
+        gainNode.gain.setValueAtTime(0.06, startTime);
+        gainNode.gain.exponentialRampToValueAtTime(0.001, startTime + 1.6);
+        osc.start(startTime);
+        osc.stop(startTime + 1.6);
+    }
+
+    function startDrone() {
+        const now = audioCtx.currentTime;
+
+        droneOsc1 = audioCtx.createOscillator();
+        droneGain1 = audioCtx.createGain();
+        droneOsc1.type = 'triangle';
+        droneOsc1.frequency.setValueAtTime(73.42, now); // D2
+        droneOsc1.connect(droneGain1);
+        droneGain1.connect(audioCtx.destination);
+        droneGain1.gain.setValueAtTime(0, now);
+        droneGain1.gain.linearRampToValueAtTime(0.04, now + 2);
+        droneOsc1.start(now);
+
+        droneOsc2 = audioCtx.createOscillator();
+        droneGain2 = audioCtx.createGain();
+        droneOsc2.type = 'sine';
+        droneOsc2.frequency.setValueAtTime(110.00, now); // A2
+        droneOsc2.connect(droneGain2);
+        droneGain2.connect(audioCtx.destination);
+        droneGain2.gain.setValueAtTime(0, now);
+        droneGain2.gain.linearRampToValueAtTime(0.04, now + 2);
+        droneOsc2.start(now);
+    }
+
+    function stopDrone() {
+        if (!audioCtx) return;
+        const now = audioCtx.currentTime;
+        if (droneGain1) {
+            droneGain1.gain.cancelScheduledValues(now);
+            droneGain1.gain.linearRampToValueAtTime(0, now + 0.6);
+        }
+        if (droneGain2) {
+            droneGain2.gain.cancelScheduledValues(now);
+            droneGain2.gain.linearRampToValueAtTime(0, now + 0.6);
+        }
+        if (droneOsc1) droneOsc1.stop(now + 0.65);
+        if (droneOsc2) droneOsc2.stop(now + 0.65);
+        droneOsc1 = null; droneOsc2 = null; droneGain1 = null; droneGain2 = null;
+    }
+
+    function scheduleMusicPulses() {
+        if (!soundEnabled || !musicPlaying || !audioCtx) return;
+
+        const scale = [146.83, 174.61, 196.00, 220.00, 233.08]; // d-mol: D F G A Bb (napet zvuk)
+        const freq = scale[Math.floor(Math.random() * scale.length)];
+        playPluck(freq, audioCtx.currentTime + 0.05);
+
+        musicTimeoutId = setTimeout(scheduleMusicPulses, 1800 + Math.random() * 1400);
+    }
+
+    function startBackgroundMusic() {
+        if (!soundEnabled || musicPlaying) return;
+        initAudio();
+        musicPlaying = true;
+        startDrone();
+        scheduleMusicPulses();
+    }
+
+    function stopBackgroundMusic() {
+        musicPlaying = false;
+        clearTimeout(musicTimeoutId);
+        musicTimeoutId = null;
+        stopDrone();
+    }
+
+    function toggleSound() {
+        soundEnabled = !soundEnabled;
+        localStorage.setItem('soundEnabled', soundEnabled);
+        const btn = document.getElementById('sound-btn');
+        if (soundEnabled) {
+            initAudio();
+            btn.innerText = "🎵 Zvuk: Uključen";
+            playSound('click');
+            if (document.getElementById('game-screen').classList.contains('active')) {
+                startBackgroundMusic();
+            }
+        } else {
+            btn.innerText = "🎵 Zvuk: Isključen";
+            stopBackgroundMusic();
+        }
+    }
+
+
+    function startTimer(seconds) {
+    if (!isTimedMode) return;
+    
+    // AKO JE ZONA 3: Skraćujemo vreme (npr. oduzmemo 3 ili 4 sekunde, ali da uvek ostane bar 3 sekunde)
+    if (timedZone === 3) {
+        seconds = Math.max(3, seconds - 4); 
+    }
+    
+    timeLeft = seconds;
+    const timerEl = document.getElementById('hud-timer');
+    if (!timerEl) return;
+    
+    clearInterval(timerInterval);
+    timerEl.innerText = `⏳ Vreme: ${timeLeft}s`;
+    timerEl.style.color = '#fff';
+    
+    resumeTimerInterval();
+}
+
+function stopTimer() {
+    clearInterval(timerInterval);
+    timerInterval = null;
+}
+
+function timeExpired() {
+    stopTimer();
+    stopAdjust();
+    stopBackgroundMusic();
+    
+    setTimeout(() => {
+        document.getElementById('game-screen').classList.remove('active');
+        document.getElementById('win-screen').classList.add('active');
+        document.getElementById('end-title').innerText = "Isteklo vreme!";
+        document.getElementById('end-msg').innerText = "Slučaj nije rešen na vreme. Zlato je zauvek izgubljeno.";
+        document.getElementById('end-image').src = "vreme-isteklo.webp";
+        playGameOverMusic();
+    }, 1500);
+}
+
+    // --- UPRAVLJANJE IGROM ---
+    function startGame(timed = false) {
+    isTimedMode = timed;
+    timedZone = 1;
+    playSound('click');
+    startBackgroundMusic();
+    currentLevel = 0;
+    lives = 3;
+    
+    document.getElementById('menu-screen').classList.remove('active');
+    document.getElementById('game-screen').classList.add('active');
+    
+    // Prikazuje tajmer samo ako je uključen vremenski izazov
+    const timerEl = document.getElementById('hud-timer');
+    if (timerEl) {
+        timerEl.style.display = isTimedMode ? 'block' : 'none';
+    }
+    
+    loadLevel();
+}
+
+    function confirmReturnToMenu() {
+    playSound('click');
+    pauseTimerForModal();
+    showModal(
+        "Povratak u meni", 
+        "Da li si siguran da želiš da se vratiš na glavni meni? Trenutni napredak u igri biće izgubljen.", 
+        `<button onclick="cancelReturnToMenu()">Otkaži</button><button onclick="executeReturnToMenu()" style="background: rgba(150,50,50,0.8); color:#fff;">Da, idi u meni</button>`
+    );
+}
+
+let timerWasRunning = false;
+
+function pauseTimerForModal() {
+    if (isTimedMode && timerInterval) {
+        clearInterval(timerInterval);
+        timerInterval = null;
+        timerWasRunning = true;
+    } else {
+        timerWasRunning = false;
+    }
+}
+
+function cancelReturnToMenu() {
+    playSound('click');
+    closeModal();
+    if (isTimedMode && timerWasRunning && timeLeft > 0) {
+        resumeTimerInterval();
+    }
+    timerWasRunning = false;
+}
+
+function resumeTimerInterval() {
+    const timerEl = document.getElementById('hud-timer');
+    if (!timerEl) return;
+    timerInterval = setInterval(() => {
+        timeLeft--;
+        timerEl.innerText = `⏳ Vreme: ${timeLeft}s`;
+        if (timeLeft <= 10) {
+            timerEl.style.color = '#ff6666';
+        }
+        if (timeLeft <= 0) {
+            clearInterval(timerInterval);
+            timeExpired();
+        }
+    }, 1000);
+}
+
+    function executeReturnToMenu() {
+        stopTimer();
+        stopAdjust();
+        stopBackgroundMusic();
+        closeModal();
+        document.getElementById('game-screen').classList.remove('active');
+        document.getElementById('menu-screen').classList.add('active');
+    }
+
+    function loadLevel() {
+    stopAdjust();
+
+    // Ako je vremenski mod, vreme se menja u zavisnosti od zone i slučaja
+    if (isTimedMode) {
+        let baseTime = 45; // Podrazumevano za Zonu 1
+        
+        if (timedZone === 2) {
+            baseTime = 40; // Zona 2 kreće od 40 sekundi
+        } else if (timedZone === 3) {
+            baseTime = 35; // Zona 3 kreće od 35 sekundi
+        }
+        
+        let timePerLevel = baseTime - (currentLevel * 5);
+        if (timePerLevel < 20) timePerLevel = 20; // Donja granica pre koraka u startTimer() koji za Zonu 3 dodatno oduzima do 4s
+        
+        startTimer(timePerLevel);
+    }
+    const lvl = levels[currentLevel];
+    targetBag = Math.floor(Math.random() * lvl.bagsCount);
+    selectedCoinsPerBag = new Array(lvl.bagsCount).fill(0);
+    guessedWrongBags = []; 
+    weighingDone = false;
+    
+    const possibleWeights = [10, 20, 30, 40, 50];
+    correctWeight = possibleWeights[Math.floor(Math.random() * possibleWeights.length)];
+
+    const possibleDiffs = [1, 2, 3];
+    weightDiff = possibleDiffs[Math.floor(Math.random() * possibleDiffs.length)];
+
+    isLighter = Math.random() < 0.5;
+
+    bagTotalCoins = [];
+    for (let i = 0; i < lvl.bagsCount; i++) {
+        let randomCount = Math.floor(Math.random() * 26) + 15; 
+        bagTotalCoins.push(randomCount);
+    }
+
+    let zoneLabel = isTimedMode ? `Z${timedZone} ` : '';
+document.getElementById('hud-level').innerText = `${zoneLabel}Slučaj: ${currentLevel + 1} / ${levels.length}`;
+    document.getElementById('hud-lives').innerText = `Pokušaji: ${'⚖️'.repeat(lives)}`;
+
+
+    // --- PALJENJE ILI GAŠENJE ALARMA U HUD-U ---
+    const hudLives = document.getElementById('hud-lives');
+    if (isTimedMode && timedZone >= 2) {
+        if (hudLives) hudLives.classList.add('danger-hud');
+    } else {
+        if (hudLives) hudLives.classList.remove('danger-hud');
+    }
+
+
+    let extraWarning = '';
+if (isTimedMode && timedZone >= 2) {
+    extraWarning = `<br><span style="color: #ff6666;">⚠️ U ovoj zoni, pitanje o težini lažnih novčića nema drugu šansu — pogrešan odgovor odmah završava igru!</span>`;
+}
+
+    document.getElementById('level-rules').innerHTML = 
+        `<b>Zadatak:</b> Na stolu je ${lvl.bagsCount} vreća. Pravi novčić teži <b>${correctWeight}g</b>, a u jednoj vreći su lažni koji odstupaju za <b>${weightDiff}g</b>.<br>` +
+        `Izaberi količine, obavi merenje i otkrij prevaru!${extraWarning}`;
+
+    renderBags();
+
+    document.getElementById('scale-display').innerHTML = `⚖️ Vaga je prazna. Izaberi novčiće iz vreća i pokreni merenje.`;
+    document.getElementById('scale-actions-area').style.display = 'flex';
+    document.getElementById('guess-section').style.display = 'none';
+    document.getElementById('game-status').innerText = '';
+    document.getElementById('next-btn').style.display = 'none';
+}
+
+    function renderBags() {
+    const lvl = levels[currentLevel];
+    let bagsHTML = '';
+    for (let i = 0; i < lvl.bagsCount; i++) {
+        let totalInBag = bagTotalCoins[i];
+        let currentSelected = selectedCoinsPerBag[i];
+        
+        let minusDisabled = weighingDone || currentSelected <= 0;
+        let plusDisabled = weighingDone || currentSelected >= totalInBag;
+
+        bagsHTML += `
+            <div class="bag-item" id="bag-box-${i}">
+                <div class="bag-label">Vreća #${i + 1}</div>
+                <img src="novac.webp" alt="Novac" class="bag-img" onclick="showBagInfo(${i})" title="Klikni za info o vreći">
+                <div class="bag-info">U vreći: ${totalInBag} kom</div>
+                <div class="coin-controls">
+                    <button class="coin-btn" id="minus-btn-${i}" 
+                        onmousedown="startAdjust(${i}, -1)" 
+                        onmouseup="stopAdjust()" 
+                        onmouseleave="stopAdjust()" 
+                        ontouchstart="startAdjust(${i}, -1)" 
+                        ontouchend="stopAdjust()"
+                        ontouchcancel="stopAdjust()" 
+                        ${minusDisabled ? 'disabled' : ''}>-</button>
+                    <input type="text" id="bag-input-${i}" class="coin-count-input" value="${currentSelected}" readonly>
+                    <button class="coin-btn" id="plus-btn-${i}" 
+                        onmousedown="startAdjust(${i}, 1)" 
+                        onmouseup="stopAdjust()" 
+                        onmouseleave="stopAdjust()" 
+                        ontouchstart="startAdjust(${i}, 1)" 
+                        ontouchend="stopAdjust()"
+                        ontouchcancel="stopAdjust()" 
+                        ${plusDisabled ? 'disabled' : ''}>+</button>
+                </div>
+            </div>
+        `;
+    }
+    document.getElementById('bags-list').innerHTML = bagsHTML;
+}
+
+
+
+
+let adjustInterval = null;
+let adjustTimeout = null;
+let adjustTouchActive = false;
+let lastTouchTime = 0;
+
+
+function startAdjust(bagIndex, delta) {
+    const now = Date.now();
+
+    if (weighingDone || adjustTouchActive || now - lastTouchTime < 250) return;
+
+    lastTouchTime = now;
+    adjustTouchActive = true;
+
+    // Jedan pritisak = tačno jedan novčić
+    adjustCoins(bagIndex, delta);
+
+    // Držanje dugmeta pokreće automatsko menjanje
+    adjustTimeout = setTimeout(() => {
+        adjustInterval = setInterval(() => {
+            let maxAvailable = bagTotalCoins[bagIndex];
+            let newVal = selectedCoinsPerBag[bagIndex] + delta;
+
+            if (newVal < 0 || newVal > maxAvailable) {
+                stopAdjust();
+                return;
+            }
+
+            adjustCoins(bagIndex, delta);
+        }, 100);
+    }, 400);
+}
+
+function stopAdjust() {
+    clearTimeout(adjustTimeout);
+    clearInterval(adjustInterval);
+
+    adjustTimeout = null;
+    adjustInterval = null;
+    adjustTouchActive = false;
+}
+
+    // --- PRIKAZ TAČNOG STANJA VREĆE U MODALU ---
+    function showBagInfo(bagIndex) {
+        playSound('click');
+        let total = bagTotalCoins[bagIndex];
+        let selected = selectedCoinsPerBag[bagIndex];
+        let remaining = total - selected;
+
+        let infoHTML = `
+            <b>Vreća broj #${bagIndex + 1}</b><br><br>
+            • Ukupno novčića u vreći: <b>${total}</b><br>
+            • Odabrano za vagu: <b>${selected}</b><br>
+            • Preostalo u vreći: <b>${remaining}</b>
+        `;
+        showModal("Inspekcija Vreće", infoHTML);
+    }
+
+    function adjustCoins(bagIndex, delta) {
+        if (weighingDone) return;
+        
+        let newVal = selectedCoinsPerBag[bagIndex] + delta;
+        let maxAvailable = bagTotalCoins[bagIndex];
+
+        if (newVal < 0 || newVal > maxAvailable) return;
+
+        playSound('coin');
+        selectedCoinsPerBag[bagIndex] = newVal;
+        updateBagControlsUI(bagIndex);
+    }
+
+    function updateBagControlsUI(bagIndex) {
+        const inputEl = document.getElementById(`bag-input-${bagIndex}`);
+        const minusBtn = document.getElementById(`minus-btn-${bagIndex}`);
+        const plusBtn = document.getElementById(`plus-btn-${bagIndex}`);
+
+        if (inputEl) inputEl.value = selectedCoinsPerBag[bagIndex];
+        if (minusBtn) minusBtn.disabled = weighingDone || selectedCoinsPerBag[bagIndex] <= 0;
+        if (plusBtn) plusBtn.disabled = weighingDone || selectedCoinsPerBag[bagIndex] >= bagTotalCoins[bagIndex];
+    }
+
+    function resetSelection() {
+        if (weighingDone) return;
+        stopAdjust();
+        playSound('click');
+        const lvl = levels[currentLevel];
+        selectedCoinsPerBag = new Array(lvl.bagsCount).fill(0);
+        renderBags();
+        document.getElementById('scale-display').innerHTML = `⚖️ Vaga je prazna. Izaberi novčiće iz vreća i pokreni merenje.`;
+    }
+
+    function performWeighing() {
+        if (weighingDone) return;
+        const lvl = levels[currentLevel];
+        
+        let totalCoinsSelected = selectedCoinsPerBag.reduce((a, b) => a + b, 0);
+        if (totalCoinsSelected === 0) {
+            playSound('click');
+            document.getElementById('scale-display').innerHTML = `⚠️ Moraš staviti barem jedan novčić na vagu!`;
+            return;
+        }
+
+        let activeSelection = selectedCoinsPerBag.map((count, index) => ({ count, index })).filter(item => item.count > 0);
+        if (activeSelection.length !== lvl.bagsCount) {
+            playSound('click');
+            document.getElementById('scale-display').innerHTML = `⚠️ Moraš uzeti novčiće iz <b>svake</b> vreće!`;
+            return;
+        }
+
+        let countsOnly = activeSelection.map(item => item.count);
+        let uniqueCounts = new Set(countsOnly);
+        if (uniqueCounts.size !== countsOnly.length) {
+            playSound('click');
+            document.getElementById('scale-display').innerHTML = `⚠️ Količine iz svake vreće moraju biti međusobno različite!`;
+            return;
+        }
+
+        playSound('scale');
+        let expectedWeight = 0;
+        for (let i = 0; i < lvl.bagsCount; i++) {
+            expectedWeight += selectedCoinsPerBag[i] * correctWeight;
+        }
+
+        let effectiveDiff = isLighter ? -weightDiff : weightDiff;
+        let measuredWeight = expectedWeight + (selectedCoinsPerBag[targetBag] * effectiveDiff);
+
+        document.getElementById('scale-display').innerHTML = `
+            ⚖️ Vaga pokazuje: <b style="color: var(--accent-color); font-size: 18px;">${measuredWeight}g</b> 
+            <br><span style="font-size: 12px; color: var(--subtitle-color);">(Očekivana čista težina: ${expectedWeight}g)</span>
+        `;
+        weighingDone = true;
+        document.getElementById('scale-actions-area').style.display = 'none';
+
+        for (let i = 0; i < lvl.bagsCount; i++) {
+            const bagBox = document.getElementById(`bag-box-${i}`);
+            if (bagBox) bagBox.style.opacity = '0.7';
+            updateBagControlsUI(i);
+        }
+        setupGuessSection();
+    }
+
+    function setupGuessSection() {
+        const lvl = levels[currentLevel];
+        let buttonsHTML = '';
+        for (let i = 0; i < lvl.bagsCount; i++) {
+            let isAlreadyGuessed = guessedWrongBags.includes(i);
+            buttonsHTML += `<button onclick="checkGuess(${i})" id="guess-bag-btn-${i}" ${isAlreadyGuessed ? 'disabled style="opacity: 0.4; cursor: not-allowed;"' : ''}>Vreća #${i + 1}</button>`;
+        }
+        document.getElementById('guess-buttons-container').innerHTML = buttonsHTML;
+        document.getElementById('guess-section').style.display = 'block';
+    }
+
+
+
+
+    function playBagRewardEffect(bagIndex) {
+    const bag = document.getElementById(`bag-box-${bagIndex}`);
+    if (!bag) return;
+
+    const rect = bag.getBoundingClientRect();
+
+    const effect = document.createElement('div');
+    effect.className = 'coin-reward-effect';
+
+    effect.style.left = `${rect.left + rect.width / 2}px`;
+    effect.style.top = `${rect.top + rect.height / 2}px`;
+
+    // Zlatnici
+    const coinPositions = [
+        ['-45px', '-45px'],
+        ['0px', '-60px'],
+        ['45px', '-42px'],
+        ['-55px', '-5px'],
+        ['55px', '5px']
+    ];
+
+    coinPositions.forEach(([x, y], index) => {
+        const coin = document.createElement('div');
+        coin.className = 'magic-coin';
+
+        coin.style.setProperty('--x', x);
+        coin.style.setProperty('--y', y);
+        coin.style.animationDelay = `${index * 0.04}s`;
+
+        effect.appendChild(coin);
+    });
+
+    // Zlatne iskrice
+    const sparkPositions = [
+        ['-50px', '-25px'],
+        ['-30px', '-55px'],
+        ['0px', '-68px'],
+        ['30px', '-55px'],
+        ['52px', '-20px'],
+        ['-55px', '25px'],
+        ['45px', '30px']
+    ];
+
+    sparkPositions.forEach(([x, y], index) => {
+        const spark = document.createElement('div');
+        spark.className = 'magic-spark';
+
+        spark.style.setProperty('--x', x);
+        spark.style.setProperty('--y', y);
+        spark.style.animationDelay = `${index * 0.03}s`;
+
+        effect.appendChild(spark);
+    });
+
+    document.body.appendChild(effect);
+
+    setTimeout(() => {
+        effect.remove();
+    }, 1200);
+}
+
+
+    function playWrongBagEffect(bagIndex) {
+    const bag = document.getElementById(`bag-box-${bagIndex}`);
+    if (!bag) return;
+
+    const rect = bag.getBoundingClientRect();
+
+    const effect = document.createElement('div');
+    effect.className = 'wrong-bag-effect';
+
+    effect.style.left = `${rect.left + rect.width / 2}px`;
+    effect.style.top = `${rect.top + rect.height / 2}px`;
+
+    const mark = document.createElement('div');
+    mark.className = 'wrong-bag-mark';
+    mark.textContent = '✕';
+
+    effect.appendChild(mark);
+    document.body.appendChild(effect);
+
+    setTimeout(() => {
+        effect.remove();
+    }, 750);
+}
+
+    function checkGuess(selectedBag) {
+        const statusEl = document.getElementById('game-status');
+    
+    if (selectedBag === targetBag) {
+        // AKO JE VREMENSKI MOD:
+        if (isTimedMode) {
+            
+            // ZONA 1: Samo pogađanje vreće (bez pitanja o težini)
+            if (timedZone === 1) {
+                stopTimer();
+                playSound('win');
+                playBagRewardEffect(selectedBag);
+                statusEl.style.color = '#5cd65c';
+                statusEl.innerText = `Tačno! Vreća broj ${targetBag + 1} je sakrivala lažne novčiće.`;
+                document.getElementById('guess-section').style.display = 'none';
+
+                if (currentLevel < levels.length - 1) {
+    const nextBtn = document.getElementById('next-btn');
+    nextBtn.innerText = 'Novi slučaj';
+    nextBtn.style.display = 'inline-block';
+} else {
+    const nextBtn = document.getElementById('next-btn');
+    nextBtn.innerText = 'Pređi u Zonu 2';
+    nextBtn.style.display = 'inline-block';
+
+    statusEl.innerText =
+        `Zona 1 završena! Spreman si za Zonu 2.`;
+}
+                return;
+            }
+
+            // ZONA 2 i ZONA 3: Traži se i težina (teži/lakši)
+            // Ovde ostavljamo tvoj kod za pitanje "teži ili lakši"
+            playSound('click');
+            statusEl.style.color = '#ffcc00';
+            statusEl.innerHTML = `
+    Tačno si pogodio vreću! Ali sačekaj... Da li su lažni novčići u njoj <b>teži</b> ili <b>lakši</b>?<br>
+    <span style="color: #ff6666; font-size: 12px;">⚠️ Pažnja: ovo je konačna odluka — pogrešan odgovor odmah završava slučaj, bez obzira na preostale pokušaje!</span><br><br>
+    <button onclick="checkWeightType(true)" style="margin-right: 10px; background: var(--accent-color); color: #fff; padding: 8px 16px; cursor: pointer;">⚖️ Lakši su</button>
+    <button onclick="checkWeightType(false)" style="background: var(--accent-color); color: #fff; padding: 8px 16px; cursor: pointer;">⚖️ Teži su</button>
+`;
+            document.getElementById('guess-section').style.display = 'none';
+            return; 
+        }
+
+        // ... ostatak koda za standardni mod ostaje isti ...
+
+        // Standardni tok (ako nije vremenski mod)
+        stopTimer();
+        playSound('win');
+        playBagRewardEffect(selectedBag);
+        statusEl.style.color = '#5cd65c';
+        statusEl.innerText = `Izvrsno! Vreća broj ${targetBag + 1} je sakrivala lažne novčiće.`;
+        document.getElementById('guess-section').style.display = 'none';
+
+        if (currentLevel < levels.length - 1) {
+            document.getElementById('next-btn').style.display = 'inline-block';
+        } else {
+            stopBackgroundMusic();
+            setTimeout(() => {
+                document.getElementById('game-screen').classList.remove('active');
+                document.getElementById('win-screen').classList.add('active');
+                document.getElementById('end-title').innerText = "Kraljevstvo je Spašeno!";
+                document.getElementById('end-msg').innerText = "Uspešno si rešio sve slučajeve i postao Vrhovni Detektiv!";
+                document.getElementById('end-image').src = "pobeda.webp";
+                playWinMusic();
+            }, 1500);
+        }
+    } else {
+        // 1. Zabeleži da je ova vreća promašena
+        guessedWrongBags.push(selectedBag);
+
+        // Diskretan vizuelni efekat pogrešne vreće
+        playWrongBagEffect(selectedBag);
+        
+        // 2. Odmah ugasi/zaključaj dugme za tu pogrešnu vreću
+        const wrongBtn = document.getElementById(`guess-bag-btn-${selectedBag}`);
+        if (wrongBtn) {
+            wrongBtn.disabled = true;
+            wrongBtn.style.opacity = '0.4';
+            wrongBtn.style.cursor = 'not-allowed';
+        }
+
+        // 3. Skini život
+        lives--;
+        document.getElementById('hud-lives').innerText = `Pokušaji: ${'⚖️'.repeat(lives)}`;
+        
+        // 4. Proveri da li su potrošeni svi životi
+        if (lives <= 0) {
+            stopTimer();
+            playSound('gameover');
+            stopBackgroundMusic();
+            statusEl.style.color = '#ff6666';
+            statusEl.innerText = `Kraj igre! Ostao si bez pokušaja. Tačna lažna vreća bila je vreća broj #${targetBag + 1}.`;
+            document.getElementById('guess-section').style.display = 'none';
+            
+            setTimeout(() => {
+                document.getElementById('game-screen').classList.remove('active');
+                document.getElementById('win-screen').classList.add('active');
+                document.getElementById('end-title').innerText = "Igra Završena (Game Over)";
+                document.getElementById('end-msg').innerText = "Slučaj je ostao nerazrešen. Zlato je zauvek izgubljeno.";
+                document.getElementById('end-image').src = "poraz.webp";
+                playGameOverMusic();
+            }, 4000);
+        } else {
+            playSound('click');
+            statusEl.style.color = '#ff9966';
+            
+            // Prebroj aktivna dugmad
+            const lvl = levels[currentLevel];
+            let activeButtons = 0;
+            for (let i = 0; i < lvl.bagsCount; i++) {
+                const btn = document.getElementById(`guess-bag-btn-${i}`);
+                if (btn && !btn.disabled) {
+                    activeButtons++;
+                }
+            }
+
+            // Provera za tvoju poruku pod brojem 2
+            if (lvl.bagsCount === 3 && activeButtons === 1) {
+                statusEl.innerText = `Netačno! Ostala je samo još jedna vreća koju nisi proverio. Slučaj je pred rešenjem!`;
+            } else {
+                let pokusajText = lives === 1 ? 'pokušaj' : 'pokušaja';
+                statusEl.innerText = `Netačno! Preostalo ti je još ${lives} ${pokusajText}. Razmisli pažljivo!`;
+            }
+        }
+    }
+}
+
+
+    function checkWeightType(guessedLighter) {
+    const statusEl = document.getElementById('game-status');
+
+    // Proveravamo da li je pogodak tačan
+    if (guessedLighter === isLighter) {
+        stopTimer();
+        playSound('win');
+        playBagRewardEffect(targetBag);
+        statusEl.style.color = '#5cd65c';
+        statusEl.innerText = `Izvrsno! Pogodio si i vreću i da su novčići ${isLighter ? 'lakši' : 'teži'}!`;
+        document.getElementById('guess-section').style.display = 'none';
+
+        if (currentLevel < levels.length - 1) {
+            const nextBtn = document.getElementById('next-btn');
+            nextBtn.innerText = 'Novi slučaj';
+            nextBtn.style.display = 'inline-block';
+        } else {
+            if (isTimedMode) {
+                if (timedZone === 2) {
+                    timedZone = 3;
+                    currentLevel = 0; 
+                    
+                    document.getElementById('next-btn').style.display = 'none';
+                    
+                    showModal(
+                        "Zona 2 završena!",
+                        "Odlično! Sada ulaziš u <b>Zonu 3</b>.<br><br>" +
+                        "Vreme za rešavanje slučaja u Zoni 3 je <b>još kraće</b>. Srećno!",
+                        `<button onclick="closeModal(); loadLevel();">Započni Zonu 3</button>`
+                    );
+                    return;
+
+                } else if (timedZone === 3) {
+                    stopBackgroundMusic();
+                    setTimeout(() => {
+                        document.getElementById('game-screen').classList.remove('active');
+                        document.getElementById('win-screen').classList.add('active');
+                        document.getElementById('end-title').innerText = "Vrhovni Vremenski Šampion!";
+                        document.getElementById('end-msg').innerText = "Uspešno si prošao sve tri zone vremenskog moda!";
+                        document.getElementById('end-image').src = "pobeda.webp";
+                        playWinMusic();
+                    }, 1500);
+                }
+            } else {
+                stopBackgroundMusic();
+                setTimeout(() => {
+                    document.getElementById('game-screen').classList.remove('active');
+                    document.getElementById('win-screen').classList.add('active');
+                    document.getElementById('end-title').innerText = "Kraljevstvo je Spašeno!";
+                    document.getElementById('end-msg').innerText = "Uspešno si rešio sve slučajeve i postao Vrhovni Detektiv!";
+                    document.getElementById('end-image').src = "pobeda.webp";
+                    playWinMusic();
+                }, 1500);
+            }
+        }
+    } else {
+        // AKO JE POGREŠNO POGODIO TEŽINU
+        stopTimer();
+        playSound('gameover');
+        statusEl.style.color = '#ff6666';
+        statusEl.innerText = `Netačno! Lažni novčići su zapravo bili ${isLighter ? 'lakši' : 'teži'}. Igra je završena.`;
+        document.getElementById('guess-section').style.display = 'none';
+        
+        setTimeout(() => {
+            document.getElementById('game-screen').classList.remove('active');
+            document.getElementById('win-screen').classList.add('active');
+            document.getElementById('end-title').innerText = "Igra Završena (Game Over)";
+            document.getElementById('end-msg').innerText = "Pogrešio si vrstu težine i slučaj je propao.";
+            document.getElementById('end-image').src = "poraz.webp";
+            playGameOverMusic();
+        }, 3000);
+    }
+}
+
+   function nextLevel() {
+    playSound('click');
+
+    if (!isTimedMode) {
+        currentLevel++;
+        if (currentLevel < levels.length) {
+            loadLevel();
+        }
+        return;
+    }
+
+    // VREMENSKI MOD
+
+    if (currentLevel < levels.length - 1) {
+        currentLevel++;
+        loadLevel();
+        return;
+    }
+
+    // ZONA 1 -> ZONA 2
+    if (timedZone === 1) {
+        timedZone = 2;
+        currentLevel = 0;
+        document.getElementById('next-btn').style.display = 'none';
+
+        showModal(
+            "Zona 1 završena!",
+            "Odlično! Sada ulaziš u <b>Zonu 2</b>.<br><br>" +
+            "Od sada moraš da otkriješ i da li su lažni novčići <b>teži ili lakši</b>.",
+            `<button onclick="closeModal(); loadLevel();">Započni Zonu 2</button>`
+        );
+        return;
+    }
+
+    // ZONA 2 -> ZONA 3
+    if (timedZone === 2) {
+        timedZone = 3;
+        currentLevel = 0;
+        document.getElementById('next-btn').style.display = 'none';
+
+        showModal(
+            "Zona 2 završena!",
+            "Odlično! Sada ulaziš u <b>Zonu 3</b>.<br><br>" +
+            "Vreme za rešavanje slučaja u Zoni 3 je <b>još kraće</b>. Srećno!",
+            `<button onclick="closeModal(); loadLevel();">Započni Zonu 3</button>`
+        );
+        return;
+    }
+
+    // ZONA 3 ZAVRŠENA (Kraj cele igre u vremenskom modu)
+    if (timedZone === 3) {
+        stopBackgroundMusic();
+        document.getElementById('next-btn').style.display = 'none';
+        setTimeout(() => {
+            document.getElementById('game-screen').classList.remove('active');
+            document.getElementById('win-screen').classList.add('active');
+            document.getElementById('end-title').innerText = "Vrhovni Vremenski Šampion!";
+            document.getElementById('end-msg').innerText = "Uspešno si prošao sve tri zone vremenskog moda!";
+            document.getElementById('end-image').src = "pobeda.webp";
+            playWinMusic();
+        }, 500);
+        return;
+    }
+}
+
+    function backToMenu() {
+        stopEndMusic();
+        playSound('click');
+        stopBackgroundMusic();
+        document.getElementById('end-image').src = "";
+        document.getElementById('win-screen').classList.remove('active');
+        document.getElementById('menu-screen').classList.add('active');
+    }
+</script>
+
+</body>
+</html>
