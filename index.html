@@ -892,6 +892,7 @@
 
     let currentLevel = 0;
     let lives = 3;
+    let isGameOver = false; 
     let guessedWrongBags = []; 
     let targetBag = 0;
     let bagTotalCoins = []; 
@@ -1254,6 +1255,8 @@ function stopTimer() {
 }
 
 function timeExpired() {
+    if (isGameOver) return; 
+    isGameOver = true;
     stopTimer();
     stopAdjust();
     stopBackgroundMusic();
@@ -1270,6 +1273,7 @@ function timeExpired() {
 
     
     function startGame(timed = false) {
+    isGameOver = false;
     isTimedMode = timed;
     timedZone = 1;
     playSound('click');
@@ -1700,6 +1704,9 @@ function stopAdjust() {
 }
 
     function checkGuess(selectedBag) {
+
+        if (isGameOver) return;
+
         const statusEl = document.getElementById('game-status');
     
     if (selectedBag === targetBag) {
@@ -1788,6 +1795,9 @@ function stopAdjust() {
         
         
         if (lives <= 0) {
+            if (isGameOver) return;
+            isGameOver = true;
+
             stopTimer();
             playSound('gameover');
             stopBackgroundMusic();
@@ -1830,6 +1840,9 @@ function stopAdjust() {
 
 
     function checkWeightType(guessedLighter) {
+
+    if (isGameOver) return;
+
     const statusEl = document.getElementById('game-status');
 
     
@@ -1886,6 +1899,9 @@ function stopAdjust() {
         }
     } else {
         
+        if (isGameOver) return;
+        isGameOver = true;
+
         stopTimer();
         playSound('gameover');
         statusEl.style.color = '#ff6666';
